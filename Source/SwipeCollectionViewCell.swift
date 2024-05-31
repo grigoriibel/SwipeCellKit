@@ -35,7 +35,11 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     var isPreviouslySelected = false
     
     weak var collectionView: UICollectionView?
-    
+
+    open var swipeableEnabled: Bool {
+        return false
+    }
+
     /// :nodoc:
     open override var frame: CGRect {
         set { super.frame = state.isActive ? CGRect(origin: CGPoint(x: frame.minX, y: newValue.minY), size: newValue.size) : newValue }
@@ -54,7 +58,11 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     /// :nodoc:
     open override var layoutMargins: UIEdgeInsets {
         get {
-            return frame.origin.x != 0 ? swipeController.originalLayoutMargins : super.layoutMargins
+            if swipeableEnabled {
+                return frame.origin.x != 0 ? swipeController.originalLayoutMargins : super.layoutMargins
+            } else {
+                return super.layoutMargins
+            }
         }
         set {
             super.layoutMargins = newValue
@@ -80,6 +88,10 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     }
     
     open func configure() {
+        guard swipeableEnabled else {
+            return
+        }
+
         contentView.clipsToBounds = false
         
         if contentView.translatesAutoresizingMaskIntoConstraints == true {
@@ -108,7 +120,11 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     /// :nodoc:
     override open func didMoveToSuperview() {
         super.didMoveToSuperview()
-        
+
+        guard swipeableEnabled else {
+            return
+        }
+
         var view: UIView = self
         while let superview = view.superview {
             view = superview
@@ -128,7 +144,11 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     /// :nodoc:
     open override func willMove(toWindow newWindow: UIWindow?) {
         super.willMove(toWindow: newWindow)
-        
+
+        guard swipeableEnabled else {
+            return
+        }
+
         if newWindow == nil {
             reset()
         }
@@ -175,13 +195,21 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     
     /// :nodoc:
     override open func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard swipeableEnabled else {
+            return false
+        }
+
         return swipeController.gestureRecognizerShouldBegin(gestureRecognizer)
     }
     
     /// :nodoc:
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
+
+        guard swipeableEnabled else {
+            return
+        }
+
         swipeController.traitCollectionDidChange(from: previousTraitCollection, to: self.traitCollection)
     }
     
@@ -192,6 +220,10 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     }
     
     func reset() {
+        guard swipeableEnabled else {
+            return
+        }
+
         contentView.clipsToBounds = false
         swipeController.reset()
         collectionView?.setGestureEnabled(true)
