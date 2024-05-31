@@ -79,7 +79,7 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
         collectionView?.panGestureRecognizer.removeTarget(self, action: nil)
     }
     
-    func configure() {
+    open func configure() {
         contentView.clipsToBounds = false
         
         if contentView.translatesAutoresizingMaskIntoConstraints == true {
