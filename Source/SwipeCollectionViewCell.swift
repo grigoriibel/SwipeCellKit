@@ -26,9 +26,8 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     var indexPath: IndexPath? {
         return collectionView?.indexPath(for: self)
     }
-    var panGestureRecognizer: UIGestureRecognizer
-    {
-        return swipeController.panGestureRecognizer;
+    var panGestureRecognizer: UIGestureRecognizer {
+        return swipeController?.panGestureRecognizer ?? UIPanGestureRecognizer();
     }
     
     var swipeController: SwipeController!
