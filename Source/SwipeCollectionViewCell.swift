@@ -30,7 +30,7 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
         return swipeController?.panGestureRecognizer ?? UIPanGestureRecognizer();
     }
     
-    var swipeController: SwipeController!
+    var swipeController: SwipeController?
     var isPreviouslySelected = false
     
     weak var collectionView: UICollectionView?
@@ -57,7 +57,7 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     /// :nodoc:
     open override var layoutMargins: UIEdgeInsets {
         get {
-            if swipeableEnabled {
+            if swipeableEnabled, let swipeController {
                 return frame.origin.x != 0 ? swipeController.originalLayoutMargins : super.layoutMargins
             } else {
                 return super.layoutMargins
@@ -105,7 +105,7 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
         }
         
         swipeController = SwipeController(swipeable: self, actionsContainerView: contentView)
-        swipeController.delegate = self
+        swipeController?.delegate = self
     }
     
     /// :nodoc:
@@ -131,8 +131,8 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
             if let collectionView = view as? UICollectionView {
                 self.collectionView = collectionView
                 
-                swipeController.scrollView = scrollView
-                
+                swipeController?.scrollView = scrollView
+
                 collectionView.panGestureRecognizer.removeTarget(self, action: nil)
                 collectionView.panGestureRecognizer.addTarget(self, action: #selector(handleCollectionPan(gesture:)))
                 return
@@ -194,7 +194,7 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     
     /// :nodoc:
     override open func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard swipeableEnabled else {
+        guard swipeableEnabled, let swipeController else {
             return false
         }
 
@@ -205,7 +205,7 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        guard swipeableEnabled else {
+        guard swipeableEnabled, let swipeController else {
             return
         }
 
@@ -224,7 +224,7 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
         }
 
         contentView.clipsToBounds = false
-        swipeController.reset()
+        swipeController?.reset()
         collectionView?.setGestureEnabled(true)
     }
     
